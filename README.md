@@ -60,9 +60,9 @@ Follow these steps to set up and run the project on your local machine.
 
 - Use the web interface to search for Pokemon by name or type.
 - Click "Show Pokemon" to fetch and display Pokemon data.
-- Adjust the number of Pokemon to fetch (1-100) using the input field.
+- Filter Search by Name and Type of Pokemon.
 
 ## API Endpoints
 
-- GET `/api/v1/pokemons`: Fetch all Pokemon (with optional limit parameter)
+- GET `/api/v1/pokemons`: Fetch all Pokemon (Preset: 100)
 - GET `/api/v1/pokemons/search`: Search Pokemon by name and/or type
