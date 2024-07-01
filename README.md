@@ -16,7 +16,7 @@ Follow these steps to set up and run the project on your local machine.
 1. Clone the repository:
    ```
    git clone https://github.com/your-username/pokemon-api.git
-   cd pokemon-api
+   cd pokemonAPI
 3. Create a virtual environment:
    ```
    python -m venv venv
