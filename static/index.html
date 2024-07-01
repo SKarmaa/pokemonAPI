@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pokemon Search</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f0f0f0;
+        }
+        h1 {
+            text-align: center;
+            color: #3c5aa6;
+        }
+        #searchForm, #fetchForm {
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+        }
+        input, button {
+            padding: 10px;
+            font-size: 16px;
+        }
+        button {
+            background-color: #ffcb05;
+            border: none;
+            color: #3c5aa6;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: #c7a008;
+        }
+        #results {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 20px;
+            justify-content: center;
+        }
+        .pokemon-card {
+            border: 1px solid #ccc;
+            border-radius: 10px;
+            padding: 15px;
+            text-align: center;
+            background-color: white;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s;
+        }
+        .pokemon-card:hover {
+            transform: translateY(-5px);
+        }
+        .pokemon-card img {
+            max-width: 120px;
+            height: auto;
+        }
+        .pokemon-card h2 {
+            margin: 10px 0;
+            color: #3c5aa6;
+        }
+        .pokemon-card p {
+            margin: 5px 0;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+    <h1>Pokemon Search</h1>
+    <form id="searchForm">
+        <input type="text" id="nameInput" placeholder="Pokemon Name">
+        <input type="text" id="typeInput" placeholder="Pokemon Type">
+        <button type="submit">Search</button>
+    </form>
+    <form id="fetchForm">
+        <label for="limitInput">Number of Pokemon to fetch (1-100):</label>
+        <input type="number" id="limitInput" min="1" max="100" value="20">
+        <button type="submit">Show Pokemon</button>
+    </form>
+    <div id="results"></div>
+
+    <script>
+        const API_BASE_URL = 'http://localhost:8000/api/v1';
+
+        async function fetchPokemon(url) {
+            const response = await fetch(url);
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.json();
+        }
+
+        function displayPokemon(pokemons) {
+            const resultsDiv = document.getElementById('results');
+            resultsDiv.innerHTML = '';
+            pokemons.forEach(pokemon => {
+                const pokemonCard = document.createElement('div');
+                pokemonCard.className = 'pokemon-card';
+                pokemonCard.innerHTML = `
+                    <img src="${pokemon.image}" alt="${pokemon.name}">
+                    <h2>${pokemon.name}</h2>
+                    <p>Type: ${pokemon.type}</p>
+                `;
+                resultsDiv.appendChild(pokemonCard);
+            });
+        }
+
+        document.getElementById('searchForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const name = document.getElementById('nameInput').value;
+            const type = document.getElementById('typeInput').value;
+            let url = `${API_BASE_URL}/pokemons/search?`;
+            if (name) url += `name=${name}&`;
+            if (type) url += `type=${type}`;
+            try {
+                const pokemons = await fetchPokemon(url);
+                displayPokemon(pokemons);
+            } catch (error) {
+                console.error('Error:', error);
+                alert('No Pokemon found matching the criteria');
+            }
+        });
+
+        document.getElementById('fetchForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const limit = document.getElementById('limitInput').value;
+            try {
+                const pokemons = await fetchPokemon(`${API_BASE_URL}/pokemons?limit=${limit}`);
+                displayPokemon(pokemons);
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Failed to fetch Pokemon');
+            }
+        });
+    </script>
+</body>
+</html>
