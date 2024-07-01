@@ -34,10 +34,9 @@ Follow these steps to set up and run the project on your local machine.
    ```
    pip install -r requirements.txt
 6. Create a PostgreSQL database named `pokemon_db`:
+   Open psql and enter details.
    ```
-   psql -U postgres
    CREATE DATABASE pokemon_db;
-   \q
 8. Update the `.env` file with your database credentials:
    ```
    DB_USER=your_username
