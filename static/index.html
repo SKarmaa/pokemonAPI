@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pokemon Search</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        #searchForm {
+            margin-bottom: 20px;
+        }
+        #results {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+        .pokemon-card {
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            padding: 10px;
+            width: 200px;
+            text-align: center;
+        }
+        .pokemon-card img {
+            max-width: 100px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Pokemon Search</h1>
+    <form id="searchForm">
+        <input type="text" id="nameInput" placeholder="Pokemon Name">
+        <input type="text" id="typeInput" placeholder="Pokemon Type">
+        <button type="submit">Search</button>
+    </form>
+    <button id="showAllBtn">Show All Pokemon</button>
+    <div id="results"></div>
+
+    <script>
+        const API_BASE_URL = 'http://localhost:8000/api/v1';
+
+        async function fetchPokemon(url) {
+            const response = await fetch(url);
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.json();
+        }
+
+        function displayPokemon(pokemons) {
+            const resultsDiv = document.getElementById('results');
+            resultsDiv.innerHTML = '';
+            pokemons.forEach(pokemon => {
+                const pokemonCard = document.createElement('div');
+                pokemonCard.className = 'pokemon-card';
+                pokemonCard.innerHTML = `
+                    <h2>${pokemon.name}</h2>
+                    <img src="${pokemon.image}" alt="${pokemon.name}">
+                    <p>Type: ${pokemon.type}</p>
+                `;
+                resultsDiv.appendChild(pokemonCard);
+            });
+        }
+
+        document.getElementById('searchForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const name = document.getElementById('nameInput').value;
+            const type = document.getElementById('typeInput').value;
+            let url = `${API_BASE_URL}/pokemons/search?`;
+            if (name) url += `name=${name}&`;
+            if (type) url += `type=${type}`;
+            try {
+                const pokemons = await fetchPokemon(url);
+                displayPokemon(pokemons);
+            } catch (error) {
+                console.error('Error:', error);
+                alert('No Pokemon found matching the criteria');
+            }
+        });
+
+        document.getElementById('showAllBtn').addEventListener('click', async () => {
+            try {
+                const pokemons = await fetchPokemon(`${API_BASE_URL}/pokemons`);
+                displayPokemon(pokemons);
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Failed to fetch Pokemon');
+            }
+        });
+    </script>
+</body>
+</html>
